@@ -32,8 +32,7 @@ try:
     r2  = requests.get("https://api.inaturalist.org/v1/taxa",
                        params={"q": cn, "per_page": 1})
     r2.raise_for_status()
-    taxa = r2.json().get("results", [])
-    if taxa:
+    if (taxa := r2.json().get("results", [])):
         t = taxa[0]
         cs = (t.get('conservation_status') or {}).get('status_name', 'Unknown')
         print(f"SPECIES: {t.get('name')} ({t.get('preferred_common_name', 'N/A')})")
@@ -52,8 +51,7 @@ print("MODULE 4 - SEALIFEBASE INFO")
 try:
     r4 = requests.get(f"https://www.sealifebase.ca/api.php?genus={genus}&species={sp}")
     r4.raise_for_status()
-    data = r4.json().get('data')
-    if data:
+    if (data := r4.json().get('data')):
         b = data[0]
         print(f"Length: {b.get('Length', 'N/A')} in")
         print(f"Weight: {b.get('Weight', 'N/A')} lb")
@@ -66,3 +64,14 @@ except Exception as e:
     print(f"Error fetching SeaLifeBase data: {e}")
         
 print("=== Dashboard complete ===")
+
+from urllib.parse import quote_plus
+
+def learning_links(common_name, sci_name):
+    print("\nLEARNING RESOURCES:")
+    print(f"1. Wikipedia: https://en.wikipedia.org/wiki/{quote_plus(sci_name)}")
+    print(f"2. iNaturalist: https://www.inaturalist.org/taxa?query={quote_plus(common_name)}")
+    print(f"3. OBIS: https://obis.org/taxon/{quote_plus(sci_name)}")
+    print(f"4. SeaLifeBase: https://www.sealifebase.ca/summary/{quote_plus(sci_name)}.html")
+
+learning_links(cn, sci)
